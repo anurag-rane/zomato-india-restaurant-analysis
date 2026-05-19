@@ -1,0 +1,7 @@
+Dataset: Zomato Bangalore Restaurants
+Source: Kaggle — https://www.kaggle.com/datasets/himanshupoddar/zomato-bangalore-restaurants
+Volume: 56,251 rows | 17 columns
+Coverage: Bangalore, India
+
+Note: Raw data file not included in this repository.
+Analysis performed on a deduplicated view of 12,137 unique restaurant-location combinations.
