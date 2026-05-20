@@ -14,10 +14,25 @@ As a former restaurant founder, I approached this dataset with firsthand underst
 
 ---
 
+## 📊 Interactive Tableau Dashboard
+
+**[View Live Dashboard on Tableau Public](https://public.tableau.com/app/profile/anurag.rane/viz/ZomatoRestaurantIntelligenceBangalore/ZomatoRestaurantIntelligence)**
+
+The dashboard includes:
+- **Rating Distribution** — bell curve of restaurant ratings across Bangalore
+- **Top Locations** — highest rated neighbourhoods by avg rating
+- **Cuisine Analysis** — volume vs rating by cuisine type (orange-blue diverging)
+- **Price Segments** — cost tier vs avg rating correlation
+- **Online Order Impact** — does online ordering correlate with better ratings?
+
+All panels are connected to a single **Location filter** — select any neighbourhood to update all 5 charts simultaneously.
+
+---
+
 ## Dataset
 
 - **Source:** Zomato Bangalore Restaurants Dataset — [Kaggle](https://www.kaggle.com/datasets/himanshupoddar/zomato-bangalore-restaurants)
-- **Volume:** 56,251 restaurants | 17 columns
+- **Volume:** 56,251 rows | 17 columns | deduplicated to 12,137 unique restaurant-location combinations
 - **Coverage:** Bangalore, India — multiple neighbourhoods, cuisine types, and restaurant formats
 
 | Column | Description |
@@ -31,25 +46,21 @@ As a former restaurant founder, I approached this dataset with firsthand underst
 | online_order | Whether online ordering is available (Yes/No) |
 | book_table | Whether table booking is available (Yes/No) |
 | rest_type | Restaurant type (Casual Dining, Café, Quick Bites, etc.) |
-| listed_in(type) | Meal type listed under |
-| listed_in(city) | City area listed under |
 
 ---
 
 ## SQL Analysis — 6 Sections, 20+ Queries
 
 ### Section I — Data Exploration & Cleaning
-- Total restaurant count
-- Null value audit across all key columns
+- Total restaurant count and null audit
 - Unique location and restaurant type distribution
 - Online order and table booking availability breakdown
 
 ### Section II — Ratings Analysis
 - Overall rating distribution across all restaurants
 - Average rating by location (top 10 neighbourhoods)
-- Average rating by restaurant type
 - Top 10 highest rated restaurants (min 100 votes)
-- Rating vs online order availability — does it matter?
+- Rating vs online order availability
 
 ### Section III — Cuisine Analysis
 - Top 15 most popular cuisines by restaurant count
@@ -57,58 +68,41 @@ As a former restaurant founder, I approached this dataset with firsthand underst
 - Cuisine distribution within top 5 locations
 
 ### Section IV — Cost Analysis
-- Average cost for two by location — most to least expensive
-- Cost vs rating correlation — price segment analysis
-- Best value restaurants — high rating (≥4.0), low cost (≤₹400), verified votes
+- Average cost for two by location
+- Cost vs rating correlation — price segment analysis using CASE WHEN
+- Best value restaurants — high rating (≥4.0), low cost (≤₹400)
 
 ### Section V — Location Intelligence
 - Restaurant density + rating + cost + digital adoption by neighbourhood
-- Underserved locations — high avg rating but low restaurant count
+- Underserved locations — high avg rating, low restaurant count
 - Online ordering adoption rate by location
 
 ### Section VI — Advanced Analysis (CTEs & Window Functions)
-- Location ranking by avg rating using `RANK()` window function
-- Cuisine popularity ranking within each location — CTE + `RANK() OVER PARTITION BY`
+- Location ranking by avg rating — RANK() window function
+- Cuisine popularity ranking within each location — RANK() OVER PARTITION BY
 - Restaurant performance tier classification — Elite / High Performer / Solid / Average
-- Cost percentile ranking by location using `PERCENT_RANK()`
+- Cost percentile ranking by location — PERCENT_RANK()
 
 ---
 
 ## Key Findings
 
-- **Indiranagar, Koramangala, and Whitefield** lead in restaurant density — highly competitive but also highest votes, indicating strong demand
-- **Budget restaurants (< ₹300)** are the most common but don't necessarily rate highest — mid-range (₹300–600) shows the best rating-to-cost ratio
-- **Online ordering correlates positively with ratings** — restaurants offering online delivery tend to have slightly higher average ratings, likely due to higher review volume
-- **Several smaller neighbourhoods** (10–50 restaurants) show avg ratings ≥ 4.0 with high vote counts — signalling underserved high-demand areas worth targeting for new openings
-- **North Indian and Chinese cuisines** dominate by volume but specialty cuisines (Continental, European) show higher average ratings at premium price points
-- **Fine dining (₹1000+)** has the highest avg rating but the smallest restaurant count — low competition, high customer expectation
+- **Rajarajeshwari Nagar and Jayanagar** lead in avg rating among high-volume locations
+- **Fine Dining (₹1000+)** rates highest at 3.97 — but only a small fraction of restaurants
+- **Online ordering correlates with higher ratings** — Yes (3.65) vs No (3.59)
+- **North Indian dominates volume** (200+ restaurants) but rates lower (3.58) — most saturated cuisine
+- **Continental and Desserts** rate significantly higher despite lower volumes — less competition, higher quality
+- **Rating bell curve peaks at 3.7–3.9** — most restaurants cluster in this range
 
 ---
 
 ## Actionable Recommendations
 
-1. **New restaurant operators should target underserved high-rating neighbourhoods** — areas with strong demand signals (high votes, high avg ratings) but fewer than 50 restaurants present a lower-competition entry point
-
-2. **Enable online ordering from day one** — data shows a positive correlation between online delivery availability and ratings, likely driven by review volume and accessibility
-
-3. **Mid-range pricing (₹300–600) offers the best return on satisfaction** — budget positioning risks margin compression while fine dining requires significant investment; mid-range hits the sweet spot
-
-4. **North Indian remains the safest cuisine bet for volume** — but operators willing to offer Continental or specialty cuisines in premium locations can command better ratings and margins
-
-5. **Table booking adoption is low overall** — restaurants that offer it tend to be in the premium segment; mid-range operators who add this feature can differentiate meaningfully
-
----
-
-## Tableau Dashboard
-
-📊 **[View Interactive Dashboard on Tableau Public]** *(link to be added after publishing)*
-
-The dashboard visualises:
-- Restaurant density heatmap by location
-- Rating distribution across cuisine types
-- Cost vs rating scatter plot by neighbourhood
-- Online ordering adoption by area
-- Performance tier breakdown
+1. **Target underserved high-rating neighbourhoods** — strong demand signals with low competition
+2. **Enable online ordering from day one** — positive correlation with ratings and visibility
+3. **Fine dining or specialty cuisines offer better rating outcomes** — less competition, higher margins
+4. **North Indian is safe for volume but hard to differentiate** — need strong execution to stand out
+5. **Mid-range pricing (₹300–600) is the volume sweet spot** — most restaurants, most customers
 
 ---
 
@@ -116,22 +110,20 @@ The dashboard visualises:
 
 | Tool | Purpose |
 |------|---------|
-| SQL (MySQL) | All analysis — joins, aggregations, CTEs, window functions, CASE WHEN, SUBSTRING_INDEX |
-| Tableau Public | Interactive dashboard — location heatmap, cuisine ratings, cost analysis |
+| SQL (MySQL) | Data cleaning, aggregations, CTEs, window functions |
+| Tableau Public | Interactive 5-panel dashboard with location filter |
 
 ---
 
 ## SQL Techniques Demonstrated
 
-- `REPLACE()` + `CAST()` for inline data cleaning (rate and cost columns)
+- `REPLACE()` + `CAST()` for inline data cleaning
 - `SUBSTRING_INDEX()` to extract primary cuisine from comma-separated values
 - `CASE WHEN` for price segment bucketing and performance tier classification
-- `CTE` for modular, readable query structure
-- `RANK() OVER (ORDER BY)` for overall rankings
-- `RANK() OVER (PARTITION BY)` for within-group rankings
+- CTE for modular query structure
+- `RANK() OVER (ORDER BY)` and `RANK() OVER (PARTITION BY)`
 - `PERCENT_RANK()` for cost percentile analysis
 - `HAVING` for post-aggregation filtering
-- Subqueries for dynamic top-N filtering
 
 ---
 
@@ -142,8 +134,9 @@ zomato-india-restaurant-analysis/
 │
 ├── README.md
 ├── zomato_restaurant_analysis.sql    ← 20+ queries across 6 sections
-└── tableau/
-    └── zomato_dashboard.twbx         ← Tableau workbook (to be added)
+├── dashboard_preview.png             ← Dashboard screenshot
+└── data/
+    └── data_source.txt               ← Dataset reference
 ```
 
 ---
